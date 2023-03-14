@@ -9,7 +9,7 @@ public static class ProgramExtensions
     {
         serviceCollection.AddDbContext<CatalogContext>(opt =>
         {
-            opt.UseSqlServer(config.GetConnectionString("DefaultConnections"));
+            opt.UseSqlServer(config.GetConnectionString("DefaultConnection"));
         });
     }
 }

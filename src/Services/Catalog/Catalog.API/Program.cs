@@ -1,4 +1,5 @@
 using Catalog.API;
+using Catalog.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseRequestExecutionTimeMiddleware();
 
 app.UseAuthorization();
 
