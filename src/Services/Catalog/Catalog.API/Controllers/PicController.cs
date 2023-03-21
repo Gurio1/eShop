@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Mime;
 using Catalog.API.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,38 +16,24 @@ public class PicController: ControllerBase
         _catalogContext = catalogContext;
     }
     
-    [HttpGet]
-    [Route("Catalog/items/{catalogItemId:int}/pic")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetPicture(int catalogItemId)
+    [ProducesResponseType(typeof(MediaTypeNames.Image),(int)HttpStatusCode.OK)]
+    [HttpGet("images/{filename}")]
+    public IActionResult GetImage(string filename,[FromServices] IWebHostEnvironment env)
     {
-        if (catalogItemId <= 0)
+        var imagePath = Path.Combine(env.ContentRootPath, "Pics", filename);
+
+        if (!System.IO.File.Exists(imagePath))
         {
-            return BadRequest();
+            return NotFound();
         }
 
-        var item = await _catalogContext.CatalogItems
-            .FirstOrDefaultAsync(ci => ci.Id == catalogItemId);
+        var fileStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
+        
+        string imageFileExtension = Path.GetExtension(imagePath);
 
-        if (item!= null)
-        {
-            string filePath = Path.Combine("pics", item.PictureFileName);
-
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound();
-            }
-
-            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-
-            string imageFileExtension = Path.GetExtension(item.PictureFileName);
-            string mimeType = GetImageMimeTypeFromImageFileExtension(imageFileExtension);
-                
-            return File(fileStream, mimeType);
-        }
-
-        return NotFound();
+        return new FileStreamResult(fileStream, GetImageMimeTypeFromImageFileExtension(imageFileExtension));
     }
     
     
