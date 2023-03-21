@@ -12,7 +12,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCustomSqlServer(builder.Configuration);
 
-
+builder.Services.AddCustomDevCors();
+builder.Services.AddCustomAutomaper();
 
 var app = builder.Build();
 
@@ -21,11 +22,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-
+} 
 app.UseRequestExecutionTimeMiddleware();
-
+    
 app.UseAuthorization();
+
+app.UseCors("AllowAllOrigins");
 
 app.MapControllers();
 
