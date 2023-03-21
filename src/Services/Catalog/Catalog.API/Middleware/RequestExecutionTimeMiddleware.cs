@@ -13,6 +13,7 @@ public class RequestExecutionTimeMiddleware
 
     public async Task InvokeAsync(HttpContext httpContext,ILogger<RequestExecutionTimeMiddleware> logger)
     {
+        logger.LogInformation($"Request send in {DateTime.Now}");
         var startTime = Stopwatch.GetTimestamp();
         
         await _next(httpContext);
